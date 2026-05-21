@@ -1,217 +1,135 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/RNukvtFO)
-# Project 3: Pathfinder
+Project 3: Pathfinder
+Map Theme
 
-> Student note: You must complete this README. Do not leave the TODO text in your final submission.
+My map theme is a fantasy adventure village. The graph represents different locations inside a fantasy world where travelers move between important places such as gates, markets, rest areas, and castles. The project focuses on finding the shortest and most efficient travel routes between locations using graph algorithms.
 
-## Map Theme
+Map Picture
+![Project map](assets/map.png)
 
-TODO: Describe your map theme.
+How the Graph Works
+Nodes
+
+Each node represents a location in the fantasy village map.
 
 Examples:
 
-- campus map
-- game world
-- museum
-- festival
-- delivery route
-- subway/bus route
-- fantasy village
+Gate
+Food Court
+Rest Area
+Magic Shop
+Castle
+Edges
 
-## Map Picture
+Each edge represents a path connecting two locations.
 
-TODO: Add your drawn map image here.
+Weights
 
-Required:
+Each weight represents the travel cost or distance between locations.
 
-```md
-![Project map](assets/map.png)
-```
+Features Implemented
+ Load graph from JSON
+ Get neighbors
+ BFS traversal
+ Dijkstra shortest distances
+ Shortest path reconstruction
+ Demo function
+ Extra tests
+ Stretch feature: Graph validation
+How to Run
 
-Your map picture should show:
+Run the project using:
 
-- all nodes/locations,
-- all edges/connections,
-- all edge weights.
-
-![Project map](assets/map.png)
-
-## How the Graph Works
-
-### Nodes
-
-TODO: Explain what your nodes represent.
-
-Example:
-
-```text
-Each node is a location in my fantasy village.
-```
-
-### Edges
-
-TODO: Explain what your edges represent.
-
-Example:
-
-```text
-Each edge is a path between two locations.
-```
-
-### Weights
-
-TODO: Explain what your weights represent.
-
-Example:
-
-```text
-Each weight is the walking time in minutes.
-```
-
-## Features Implemented
-
-Check the features you completed:
-
-- [ ] Load graph from JSON
-- [ ] Get neighbors
-- [ ] BFS traversal
-- [ ] Dijkstra shortest distances
-- [ ] Shortest path reconstruction
-- [ ] Demo function
-- [ ] Extra tests
-- [ ] Stretch feature: TODO
-
-## How to Run
-
-TODO: Explain how to run your project.
-
-Example:
-
-```bash
 python src/project.py
-```
+How to Test
 
-## How to Test
+Run all tests using:
 
-TODO: Explain how to run the tests.
-
-Example:
-
-```bash
 pytest -q
-```
 
-## Complexity
+or on Windows:
 
-### BFS
-
-Time:
-
-```text
-TODO
-```
-
-Space:
-
-```text
-TODO
-```
-
-Explanation:
-
-TODO: Explain why BFS has this complexity.
-
-### Dijkstra
+py -m pytest -q
+Complexity
+BFS
 
 Time:
 
-```text
-TODO
-```
+O(V + E)
 
 Space:
 
-```text
-TODO
-```
+O(V)
 
 Explanation:
 
-TODO: Explain why Dijkstra has this complexity.
+Breadth-First Search visits every node and edge at most once. Extra memory is used for the queue and visited set.
 
-### Shortest Path Reconstruction
+Dijkstra
 
 Time:
 
-```text
-TODO
-```
+O((V + E) log V)
 
 Space:
 
-```text
-TODO
-```
+O(V)
 
 Explanation:
 
-TODO: Explain the complexity of rebuilding the path.
+Dijkstra’s algorithm processes nodes using a heap priority queue. Heap operations require log V time, and the algorithm may process all vertices and edges.
 
-## Edge Cases
+Shortest Path Reconstruction
 
-Check the edge cases your project handles:
+Time:
 
-- [ ] Empty graph
-- [ ] Missing start node
-- [ ] Missing target node
-- [ ] Start equals target
-- [ ] Unreachable target
-- [ ] Graph with a cycle
-- [ ] Graph with one node
-- [ ] Disconnected graph
-- [ ] Multiple possible paths
-- [ ] Zero weight rejected
-- [ ] Negative weight rejected
+O(P)
+
+Space:
+
+O(P)
+
+Explanation:
+
+Path reconstruction traces backward from the target node to the starting node using the previous dictionary. P represents the number of nodes in the final path.
+
+Edge Cases
+ Empty graph
+ Missing start node
+ Missing target node
+ Start equals target
+ Unreachable target
+ Graph with a cycle
+ Graph with one node
+ Disconnected graph
+ Multiple possible paths
+ Zero weight rejected
+ Negative weight rejected
 
 Add notes about edge cases here:
 
-TODO
+The project validates all edge weights before running Dijkstra’s algorithm. Invalid graphs with zero or negative weights raise ValueError. Missing nodes and unreachable targets safely return empty results instead of crashing the program.
 
-## Known Limitations
+Known Limitations
+This project only supports undirected weighted graphs.
+Negative edge weights are not supported.
+Tie paths may return one valid shortest path instead of all shortest paths.
+The project does not include a graphical user interface (GUI).
+Assistance & Sources
+AI Used?
 
-TODO: Explain anything your project does not handle yet.
+Yes
 
-Examples:
+What AI Helped With
 
-- Does not support directed graphs.
-- Does not support negative weights.
-- Does not use a GUI.
-- Tie paths may return one valid shortest path, not all shortest paths.
+AI helped me:
 
-## Assistance & Sources
-
-You must complete this section.
-
-### AI Used?
-
-TODO: Yes / No
-
-### What AI Helped With
-
-TODO: Explain what AI helped with, if anything.
-
-Examples:
-
-- explaining Dijkstra,
-- debugging test failures,
-- suggesting edge cases,
-- improving README wording.
-
-### Other Sources
-
-TODO: List any websites, videos, books, classmates, or course materials used.
-
-If none, write:
-
-```text
-No outside sources used.
-```
+understand Dijkstra’s algorithm more clearly,
+debug test failures,
+improve edge-case handling,
+organize the README,
+improve code readability and structure.
+Other Sources
+Python documentation for heapq
+Class lecture notes
+Zybooks examples
