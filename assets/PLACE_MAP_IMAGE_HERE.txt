@@ -10,12 +10,32 @@ Allowed alternatives:
     map.jpeg
 
 Your README must embed the map image.
-Gate ----4---- Food Court
-  |                |
-  7                3
-  |                |
-Main Stage ----2---- First Aid
+                    [Observation Tower]
+                             |
+                            4
+                             |
+[Parking] --3-- [Gate] --5-- [Food Court]
+     |              |             |
+     6              7             2
+     |              |             |
+[Bus Stop]     [Main Stage] --3-- [First Aid]
+                     |               |
+                     4               5
+                     |               |
+               [Game Zone] --2-- [Rest Area]
+                     |
+                     6
+                     |
+               [VIP Lounge]
 
+This graph:
+
+has 10 nodes
+has multiple routes
+has cycles
+supports interesting shortest paths
+works well for BFS + Dijkstra demonstrations
+looks professional in presentations
 node names
 edge connections
 edge weights
