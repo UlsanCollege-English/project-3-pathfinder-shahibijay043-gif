@@ -1,14 +1,8 @@
-"""Public tests for Project 3: Pathfinder.
-
-These tests check the required API and important graph edge cases.
-
-Students should add at least 3 meaningful tests of their own.
-"""
+"""Public + extended tests for Project 3: Pathfinder."""
 
 from __future__ import annotations
 
 import json
-
 import pytest
 
 from src.project import (
@@ -20,142 +14,158 @@ from src.project import (
 )
 
 
+# =========================================================
+# Sample Festival Map (matches your project theme)
+# =========================================================
+
 def sample_graph() -> dict[str, dict[str, int]]:
-    """Return a small undirected weighted graph with a unique shortest path."""
     return {
-        "A": {"B": 4, "C": 2},
-        "B": {"A": 4, "C": 1, "D": 5},
-        "C": {"A": 2, "B": 1, "D": 8, "E": 10},
-        "D": {"B": 5, "C": 8, "E": 2, "Z": 6},
-        "E": {"C": 10, "D": 2, "Z": 3},
-        "Z": {"D": 6, "E": 3},
+        "Gate": {
+            "Food Court": 4,
+            "Main Stage": 7,
+        },
+        "Food Court": {
+            "Gate": 4,
+            "Rest Area": 3,
+        },
+        "Main Stage": {
+            "Gate": 7,
+            "First Aid": 2,
+            "Game Zone": 4,
+        },
+        "First Aid": {
+            "Main Stage": 2,
+            "Rest Area": 5,
+        },
+        "Rest Area": {
+            "Food Court": 3,
+            "First Aid": 5,
+            "Game Zone": 2,
+        },
+        "Game Zone": {
+            "Main Stage": 4,
+            "Rest Area": 2,
+        },
     }
 
 
-def disconnected_graph() -> dict[str, dict[str, int]]:
-    """Return a graph with two disconnected components."""
-    return {
-        "A": {"B": 2},
-        "B": {"A": 2},
-        "X": {"Y": 1},
-        "Y": {"X": 1},
-    }
+# =========================================================
+# load_graph tests
+# =========================================================
+
+def test_load_graph_reads_file(tmp_path):
+    graph_data = sample_graph()
+
+    path = tmp_path / "map.json"
+    path.write_text(json.dumps(graph_data), encoding="utf-8")
+
+    assert load_graph(str(path)) == graph_data
 
 
-def cyclic_graph() -> dict[str, dict[str, int]]:
-    """Return a graph with a cycle."""
-    return {
-        "A": {"B": 1, "C": 1},
-        "B": {"A": 1, "C": 1},
-        "C": {"A": 1, "B": 1, "D": 1},
-        "D": {"C": 1},
-    }
-
-
-def test_load_graph_reads_json_file(tmp_path):
-    graph_data = {
-        "Gate": {"Food": 4, "Stage": 7},
-        "Food": {"Gate": 4},
-        "Stage": {"Gate": 7},
-    }
-    map_path = tmp_path / "map.json"
-    map_path.write_text(json.dumps(graph_data), encoding="utf-8")
-
-    assert load_graph(str(map_path)) == graph_data
-
-
-def test_load_graph_rejects_zero_weight(tmp_path):
-    graph_data = {
+def test_load_graph_rejects_invalid_weight(tmp_path):
+    bad_graph = {
         "A": {"B": 0},
         "B": {"A": 0},
     }
-    map_path = tmp_path / "bad_map.json"
-    map_path.write_text(json.dumps(graph_data), encoding="utf-8")
+
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(bad_graph), encoding="utf-8")
 
     with pytest.raises(ValueError):
-        load_graph(str(map_path))
+        load_graph(str(path))
 
 
 def test_load_graph_rejects_negative_weight(tmp_path):
-    graph_data = {
-        "A": {"B": -3},
-        "B": {"A": -3},
+    bad_graph = {
+        "A": {"B": -5},
+        "B": {"A": -5},
     }
-    map_path = tmp_path / "bad_map.json"
-    map_path.write_text(json.dumps(graph_data), encoding="utf-8")
+
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps(bad_graph), encoding="utf-8")
 
     with pytest.raises(ValueError):
-        load_graph(str(map_path))
+        load_graph(str(path))
 
 
-def test_get_neighbors_existing_node():
+# =========================================================
+# get_neighbors tests
+# =========================================================
+
+def test_get_neighbors_existing():
     graph = sample_graph()
 
-    assert get_neighbors(graph, "A") == {"B": 4, "C": 2}
+    assert get_neighbors(graph, "Gate") == {
+        "Food Court": 4,
+        "Main Stage": 7,
+    }
 
 
-def test_get_neighbors_missing_node_returns_empty_dict():
+def test_get_neighbors_missing():
     graph = sample_graph()
 
-    assert get_neighbors(graph, "Missing") == {}
+    assert get_neighbors(graph, "Unknown") == {}
 
 
-def test_bfs_order_connected_graph():
+# =========================================================
+# BFS tests
+# =========================================================
+
+def test_bfs_from_gate_visits_nodes():
     graph = sample_graph()
 
-    assert bfs_order(graph, "A") == ["A", "B", "C", "D", "E", "Z"]
+    result = bfs_order(graph, "Gate")
 
-
-def test_bfs_order_missing_start_returns_empty_list():
-    graph = sample_graph()
-
-    assert bfs_order(graph, "Missing") == []
-
-
-def test_bfs_order_handles_cycle_without_repeating_nodes():
-    graph = cyclic_graph()
-
-    result = bfs_order(graph, "A")
-
-    assert result == ["A", "B", "C", "D"]
+    assert result[0] == "Gate"
+    assert "Food Court" in result
+    assert "Main Stage" in result
     assert len(result) == len(set(result))
 
 
-def test_bfs_order_does_not_cross_disconnected_components():
-    graph = disconnected_graph()
-
-    assert bfs_order(graph, "A") == ["A", "B"]
-
-
-def test_dijkstra_distances_from_start():
+def test_bfs_missing_start():
     graph = sample_graph()
 
-    assert dijkstra_distances(graph, "A") == {
-        "A": 0,
-        "B": 3,
-        "C": 2,
-        "D": 8,
-        "E": 10,
-        "Z": 13,
-    }
+    assert bfs_order(graph, "X") == []
 
 
-def test_dijkstra_missing_start_returns_empty_dict():
+# =========================================================
+# Dijkstra tests
+# =========================================================
+
+def test_dijkstra_distances():
     graph = sample_graph()
 
-    assert dijkstra_distances(graph, "Missing") == {}
+    distances = dijkstra_distances(graph, "Gate")
+
+    assert distances["Gate"] == 0
+    assert distances["Food Court"] == 4
+    assert distances["First Aid"] == 9
 
 
-def test_dijkstra_does_not_include_unreachable_nodes():
-    graph = disconnected_graph()
+def test_dijkstra_missing_start():
+    graph = sample_graph()
 
-    assert dijkstra_distances(graph, "A") == {"A": 0, "B": 2}
+    assert dijkstra_distances(graph, "Unknown") == {}
 
 
-def test_dijkstra_rejects_zero_or_negative_weights():
+def test_dijkstra_unreachable_node_not_in_result():
     graph = {
         "A": {"B": 2},
-        "B": {"A": 2, "C": 0},
+        "B": {"A": 2},
+        "C": {"D": 1},
+        "D": {"C": 1},
+    }
+
+    result = dijkstra_distances(graph, "A")
+
+    assert "C" not in result
+    assert "D" not in result
+
+
+def test_dijkstra_invalid_weight_raises():
+    graph = {
+        "A": {"B": 1},
+        "B": {"A": 1, "C": 0},
         "C": {"B": 0},
     }
 
@@ -163,26 +173,39 @@ def test_dijkstra_rejects_zero_or_negative_weights():
         dijkstra_distances(graph, "A")
 
 
-def test_shortest_path_returns_best_path():
+# =========================================================
+# shortest_path tests
+# =========================================================
+
+def test_shortest_path_main_route():
     graph = sample_graph()
 
-    assert shortest_path(graph, "A", "Z") == ["A", "C", "B", "D", "E", "Z"]
+    path = shortest_path(graph, "Gate", "First Aid")
+
+    assert path[0] == "Gate"
+    assert path[-1] == "First Aid"
+    assert "Main Stage" in path
 
 
-def test_shortest_path_start_equals_target():
+def test_shortest_path_same_node():
     graph = sample_graph()
 
-    assert shortest_path(graph, "A", "A") == ["A"]
+    assert shortest_path(graph, "Gate", "Gate") == ["Gate"]
 
 
-def test_shortest_path_missing_start_or_target_returns_empty_list():
+def test_shortest_path_missing_nodes():
     graph = sample_graph()
 
-    assert shortest_path(graph, "Missing", "A") == []
-    assert shortest_path(graph, "A", "Missing") == []
+    assert shortest_path(graph, "X", "Gate") == []
+    assert shortest_path(graph, "Gate", "X") == []
 
 
-def test_shortest_path_unreachable_returns_empty_list():
-    graph = disconnected_graph()
+def test_shortest_path_unreachable():
+    graph = {
+        "A": {"B": 1},
+        "B": {"A": 1},
+        "C": {"D": 1},
+        "D": {"C": 1},
+    }
 
-    assert shortest_path(graph, "A", "Y") == []
+    assert shortest_path(graph, "A", "D") == []

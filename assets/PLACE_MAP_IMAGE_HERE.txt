@@ -10,3 +10,12 @@ Allowed alternatives:
     map.jpeg
 
 Your README must embed the map image.
+Gate ----4---- Food Court
+  |                |
+  7                3
+  |                |
+Main Stage ----2---- First Aid
+
+node names
+edge connections
+edge weights

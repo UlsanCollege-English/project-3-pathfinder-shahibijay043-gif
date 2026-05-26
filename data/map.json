@@ -1,26 +1,43 @@
 {
+  "Parking": {
+    "Gate": 3,
+    "Bus Stop": 6
+  },
+  "Bus Stop": {
+    "Parking": 6
+  },
   "Gate": {
-    "Food Court": 4,
+    "Parking": 3,
+    "Food Court": 5,
     "Main Stage": 7
   },
   "Food Court": {
-    "Gate": 4,
-    "Rest Area": 3
+    "Gate": 5,
+    "First Aid": 2
   },
   "Main Stage": {
     "Gate": 7,
-    "First Aid": 2
-  },
-  "Rest Area": {
-    "Food Court": 3,
-    "Game Booth": 5
+    "First Aid": 3,
+    "Game Zone": 4
   },
   "First Aid": {
-    "Main Stage": 2,
-    "Game Booth": 6
+    "Food Court": 2,
+    "Main Stage": 3,
+    "Rest Area": 5
   },
-  "Game Booth": {
-    "Rest Area": 5,
-    "First Aid": 6
+  "Game Zone": {
+    "Main Stage": 4,
+    "Rest Area": 2,
+    "VIP Lounge": 6
+  },
+  "Rest Area": {
+    "Game Zone": 2,
+    "First Aid": 5
+  },
+  "VIP Lounge": {
+    "Game Zone": 6
+  },
+  "Observation Tower": {
+    "Gate": 4
   }
 }
